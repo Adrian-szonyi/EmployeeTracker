@@ -26,14 +26,10 @@ const promptUser = () => {
   ]);
 };
 
-const init = async () => {
-  const answers = await promptUser();
-
-  let Finished = false;
+ promptUser()
+ .then((answers) =>{
 
   let Command = answers.commands;
-  while (!Finished) {
-    // Ask the user who the new employee is
     switch (Command) {
       case "View all departments":
         db.query(
@@ -63,13 +59,12 @@ const init = async () => {
         );
         break;
       case "Finished":
-        // End the program (by breaking out of the while loop)
-        Finished = true;
+        // End the program (by breaking out of the while loop
         break;
     }
   }
-
-};
+ 
+ );
   
 init()
     
