@@ -109,7 +109,25 @@ const promptnewrole = (departments) => {
   );
 };
 
-const promptnewemployee = (department1, roles, managers) => {
+const getAllManagers = () => {
+  // db.query("SELECT * FROM `employee` WHERE manager_id is NULL", function (err, results, fields) {
+  // console.table("\r", results)
+  // }
+  db.query("SELECT first_name +' ' + last_name as FullName from `employee` WHERE manager_id is NULL", function (err, results, fields) {
+  let manager = results;
+  console.log(manager)
+  }
+  )
+}
+
+const getAllRoles = () => {
+  db.query("SELECT title FROM roles", function (err, results, fields) {
+  let roles = results
+  console.log(roles)
+})
+}
+
+const promptnewemployee = (department1, roles, manager) => {
 
     inquirer
       .prompt([
@@ -143,7 +161,7 @@ const promptnewemployee = (department1, roles, managers) => {
           name: "manager",
           message: "Who will be their manager?",
           type: "list",
-          choices: managers.map((employee) => {
+          choices: manager.map((manager) => {
             return { name: employee.first_name, value: employee.last_name, value: employee.role };
           }),
         },
@@ -208,12 +226,9 @@ async function init() {
         })
         break;
       case "add an employee":
-        db.query("SELECT * FROM `department`", function (err, results, fields) {
-        }).then(db.query("SELECT department.*, roles.title, roles.role_id, roles.salary, department.department_name FROM `roles` JOIN `department` ON roles.department=department.department_id", function (err, results, fields) {
-        }
-        ).then(db.query("SELECT * FROM `employee`", function (err, results, fields) {
-          promptnewemployee(results);
-        })))
+        getAllManagers() 
+        getAllRoles()
+          // promptnewemployee(results);
 
         break;
       case "update an employee role":
