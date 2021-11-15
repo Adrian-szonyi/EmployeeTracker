@@ -1,3 +1,2 @@
-SELECT *
-FROM employee
-JOIN employee ON employee_id = manager.id;
+
+SELECT * FROM employees LEFT JOIN roles ON employees.role_id=roles.role_id;
