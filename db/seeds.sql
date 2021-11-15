@@ -13,7 +13,7 @@ VALUES ("Head of department", 200000, 1),
        ("Team Lead", 100000, 5),
        ("Intern", 10000, 1);
 
-INSERT INTO employee (first_name, last_name, roles, manager_id)
+INSERT INTO employee (first_name, last_name, roles_id, manager_id)
 VALUES ("Adrian", "Szonyi", 1, NULL),
        ("Francis", "Cucumber", 6, 1),
        ("Sarah", "Salad", 2, NULL),

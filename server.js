@@ -49,7 +49,7 @@ const promptnewdept = () => {
         [newDept],
         function (err) {
           if (err) throw err;
-          promptUser();
+          init();
         }
       )
         .then(
@@ -64,14 +64,15 @@ const promptnewdept = () => {
     });
 };
 
-const promptnewrole = () => {
-  db.query("SELECT * FROM `department`", function (err, results, fields) {
-    console.table("\r", results); // results contains rows returned by server
-    console.log(
-      "before adding a new role, note down the department_id number for the department the role belongs to"
-    );
-  }).then(
-    inquirer
+const promptnewrole = (departments) => {
+  // db.query("SELECT * FROM `department`", function (err, results, fields) {
+  //   console.table("\r", results); // results contains rows returned by server
+  //   console.log(
+  //     "before adding a new role, note down the department_id number for the department the role belongs to"
+  //   );
+  // }).then(
+    
+    (inquirer
       .prompt([
         {
           type: "input",
@@ -84,9 +85,12 @@ const promptnewrole = () => {
           message: "What is the salary for the new role?",
         },
         {
-          type: "input",
           name: "department",
-          message: "What is the department_id for the new role?",
+          message: "Which department is this role for?",
+          type: "list",
+          choices: departments.map((department) => {
+            return { name: department.name, value: department.id };
+          }),
         },
       ])
       .then(function (answer) {
@@ -98,7 +102,7 @@ const promptnewrole = () => {
           [title, salary, department],
           function (err) {
             if (err) throw err;
-            promptUser();
+            init();
           }
         )
           .then(
@@ -191,7 +195,7 @@ async function init() {
         break;
       case "view all employees":
         db.query(
-          "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.roles=roles.role_id JOIN `department` ON roles.department=department.department_id",
+          "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.roles_id=roles.role_id JOIN `department` ON roles.department=department.department_id",
           function (err, results, fields) {
             console.table("\r", results); // results contains rows returned by server
           }
@@ -208,7 +212,7 @@ async function init() {
         break;
       case "update an employee role":
         db.query(
-          "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.roles=roles.role_id JOIN `department` ON roles.department=department.department_id",
+          "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.role_id=roles.role_id JOIN `department` ON roles.department=department.department_id",
           function (err, results, fields) {
             console.table("\r", results); // results contains rows returned by server
           }
@@ -219,6 +223,5 @@ async function init() {
         break;
     }
   });
-  // await init();
 };
 init();
