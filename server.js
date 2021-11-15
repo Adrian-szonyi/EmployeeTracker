@@ -113,7 +113,7 @@ const getAllManagers = () => {
   // db.query("SELECT * FROM `employee` WHERE manager_id is NULL", function (err, results, fields) {
   // console.table("\r", results)
   // }
-  db.query("SELECT first_name +' ' + last_name as FullName from `employee` WHERE manager_id is NULL", function (err, results, fields) {
+  db.query("SELECT CONCAT(first_name,' ', last_name) as FullName from `employee` WHERE manager_id is NULL", function (err, results, fields) {
   let manager = results;
   console.log(manager)
   }
@@ -127,8 +127,17 @@ const getAllRoles = () => {
 })
 }
 
-const promptnewemployee = (department1, roles, manager) => {
+const getAllDepartments = () => {
+  db.query("SELECT * FROM department", function (err, results, fields) {
+  let departments = results
+  console.log(departments)
+})
+}
 
+const promptnewemployee = (departments, roles, manager) => {
+  getAllManagers() 
+  getAllRoles()
+  getAllDepartments()
     inquirer
       .prompt([
         {
@@ -145,7 +154,7 @@ const promptnewemployee = (department1, roles, manager) => {
           name: "department",
           message: "Which department is this role for?",
           type: "list",
-          choices: department1.map((department) => {
+          choices: departments.map((department) => {
             return { name: department.department_name, value: department.department_id };
           }),
         },
@@ -162,7 +171,7 @@ const promptnewemployee = (department1, roles, manager) => {
           message: "Who will be their manager?",
           type: "list",
           choices: manager.map((manager) => {
-            return { name: employee.first_name, value: employee.last_name, value: employee.role };
+            return { name: manager.fullname, value: manager.fullname };
           }),
         },
       ])
@@ -226,8 +235,7 @@ async function init() {
         })
         break;
       case "add an employee":
-        getAllManagers() 
-        getAllRoles()
+        promptnewemployee();
           // promptnewemployee(results);
 
         break;
