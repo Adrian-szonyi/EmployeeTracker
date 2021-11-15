@@ -65,13 +65,7 @@ const promptnewdept = () => {
 };
 
 const promptnewrole = (departments) => {
-  // db.query("SELECT * FROM `department`", function (err, results, fields) {
-  //   console.table("\r", results); // results contains rows returned by server
-  //   console.log(
-  //     "before adding a new role, note down the department_id number for the department the role belongs to"
-  //   );
-  // }).then(
-    
+
     (inquirer
       .prompt([
         {
@@ -89,7 +83,7 @@ const promptnewrole = (departments) => {
           message: "Which department is this role for?",
           type: "list",
           choices: departments.map((department) => {
-            return { name: department.name, value: department.id };
+            return { name: department.department_name, value: department.department_id };
           }),
         },
       ])
@@ -115,13 +109,8 @@ const promptnewrole = (departments) => {
   );
 };
 
-const promptnewemployee = () => {
-  db.query("SELECT * FROM `department`", function (err, results, fields) {
-    console.table("\r", results); // results contains rows returned by server
-    console.log(
-      "before adding a new role, note down the department_id number for the department the role belongs to"
-    );
-  }).then(
+const promptnewemployee = (department1, roles, managers) => {
+
     inquirer
       .prompt([
         {
@@ -135,31 +124,40 @@ const promptnewemployee = () => {
           message: "What is the new employee's last name?",
         },
         {
-          type: "input",
           name: "department",
-          message: "What department do they work for?",
+          message: "Which department is this role for?",
+          type: "list",
+          choices: department1.map((department) => {
+            return { name: department.department_name, value: department.department_id };
+          }),
         },
         {
-          type: "input",
           name: "role",
-          message: "What is their title?",
+          message: "What role will they have?",
+          type: "list",
+          choices: roles.map((roles) => {
+            return { name: roles.title, value: roles.salary };
+          }),
         },
         {
-          type: "input",
           name: "manager",
-          message: "What is their manager's employee id number?",
+          message: "Who will be their manager?",
+          type: "list",
+          choices: managers.map((employee) => {
+            return { name: employee.first_name, value: employee.last_name, value: employee.role };
+          }),
         },
       ])
-  )
+  
       .then(function (answer) {
         let role = answer.role;
         let first_name = answer.first_name;
         let last_name = answer.last_name;
-        let department = answer.department;
-        let manager_id = answer.manager_id;
+        let department3 = answer.department;
+        let manager_id = answer.manager;
         db.query(
           "INSERT INTO employee (first_name, last_name, role, department, manager_id) VALUES (?, ?, ?, ?, ?)",
-          [first_name, last_name, role, department, manager_id],
+          [first_name, last_name, role, department3, manager_id],
           function (err) {
             if (err) throw err;
             init();
@@ -205,10 +203,18 @@ async function init() {
         promptnewdept();
         break;
       case "add a role":
-        promptnewrole();
+        db.query("SELECT * FROM `department`", function (err, results, fields) {
+          promptnewrole(results);
+        })
         break;
       case "add an employee":
-        promptnewemployee();
+        db.query("SELECT * FROM `department`", function (err, results, fields) {
+        }).then(db.query("SELECT department.*, roles.title, roles.role_id, roles.salary, department.department_name FROM `roles` JOIN `department` ON roles.department=department.department_id", function (err, results, fields) {
+        }
+        ).then(db.query("SELECT * FROM `employee`", function (err, results, fields) {
+          promptnewemployee(results);
+        })))
+
         break;
       case "update an employee role":
         db.query(
