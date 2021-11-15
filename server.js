@@ -11,7 +11,7 @@ const db = mysql.createConnection(
     password: "Fender49!@#",
     database: "employees_db",
   },
-  console.log(`Connected to the employees_db database.`)
+
 );
 
 const promptUser = () => {
@@ -110,96 +110,81 @@ const promptnewrole = (departments) => {
 };
 
 const getAllManagers = () => {
-  // db.query("SELECT * FROM `employee` WHERE manager_id is NULL", function (err, results, fields) {
-  // console.table("\r", results)
-  // }
-  db.query("SELECT CONCAT(first_name,' ', last_name) as FullName from `employee` WHERE manager_id is NULL", function (err, results, fields) {
-  let manager = results;
-  console.log(manager)
+  return db.promise().query("SELECT CONCAT(first_name,' ', last_name) as FullName from `employee` WHERE manager_id is NULL")
   }
-  )
-}
+  
 
 const getAllRoles = () => {
-  db.query("SELECT title FROM roles", function (err, results, fields) {
-  let roles = results
-  console.log(roles)
-})
+  return db.promise().query("SELECT * FROM roles")
 }
 
 const getAllDepartments = () => {
-  db.query("SELECT * FROM department", function (err, results, fields) {
-  let departments = results
-  console.log(departments)
-})
+ return db.promise().query("SELECT * FROM department")
 }
 
-const promptnewemployee = (departments, roles, manager) => {
-  getAllManagers() 
-  getAllRoles()
-  getAllDepartments()
-    inquirer
-      .prompt([
-        {
-          type: "input",
-          name: "first_name",
-          message: "What's the new employee's first name?",
-        },
-        {
-          type: "input",
-          name: "last_name",
-          message: "What is the new employee's last name?",
-        },
-        {
-          name: "department",
-          message: "Which department is this role for?",
-          type: "list",
-          choices: departments.map((department) => {
-            return { name: department.department_name, value: department.department_id };
-          }),
-        },
-        {
-          name: "role",
-          message: "What role will they have?",
-          type: "list",
-          choices: roles.map((roles) => {
-            return { name: roles.title, value: roles.salary };
-          }),
-        },
-        {
-          name: "manager",
-          message: "Who will be their manager?",
-          type: "list",
-          choices: manager.map((manager) => {
-            return { name: manager.fullname, value: manager.fullname };
-          }),
-        },
-      ])
-  
-      .then(function (answer) {
-        let role = answer.role;
-        let first_name = answer.first_name;
-        let last_name = answer.last_name;
-        let department3 = answer.department;
-        let manager_id = answer.manager;
-        db.query(
-          "INSERT INTO employee (first_name, last_name, role, department, manager_id) VALUES (?, ?, ?, ?, ?)",
-          [first_name, last_name, role, department3, manager_id],
-          function (err) {
-            if (err) throw err;
-            init();
-          })
+const getAllChoices = async () => {
+  const [managers] = await getAllManagers();
+  const [roles] = await getAllRoles();
+  const [departments] = await getAllDepartments();
+
+  return {managers, roles, departments}
+}
+
+const promptnewemployee = async() => {
+ const {departments, roles, managers} = await getAllChoices();
+
+     inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "first_name",
+        message: "What's the new employee's first name?",
+      },
+      {
+        type: "input",
+        name: "last_name",
+        message: "What is the new employee's last name?",
+      },
+      {
+        name: "role",
+        message: "What role will they have?",
+        type: "list",
+        choices: roles.map((role) => {
+          return { name: role.title, value: role.role_id };
+        }),
+      },
+      {
+        name: "manager",
+        message: "Who will be their manager?",
+        type: "list",
+        choices: managers.map((manager) => {
+          return { name: manager.FullName, value: manager.employee_id };
+        }),
+      },
+    ])
+
+    .then(function (answer) {
+      let role = answer.role;
+      let first_name = answer.first_name;
+      let last_name = answer.last_name;
+      let manager_id = answer.manager;
+      db.query(
+        "INSERT INTO employee (first_name, last_name, roles_id, manager_id) VALUES (?, ?, ?, ?)",
+        [first_name, last_name, role, manager_id],
+        function (err) {
+          if (err) throw err;
+          init();
         })
-          .then(
-            db.query(
-              "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.roles=roles.role_id JOIN `department` ON roles.department=department.department_id",
-              function (err, results, fields) {
-                console.table("\r", results); // results contains rows returned by server
-              }
-            )
+      })
+        .then(
+          db.query(
+            "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.roles=roles.role_id JOIN `department` ON roles.department=department.department_id",
+            function (err, results, fields) {
+              console.table("\r", results); // results contains rows returned by server
+            }
           )
-        
-      };
+        )
+          }
 
 async function init() {
   await promptUser().then((answers) => {
