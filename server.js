@@ -158,7 +158,7 @@ const promptnewemployee = () => {
           [first_name, last_name, role, department, manager_id],
           function (err) {
             if (err) throw err;
-            promptUser();
+            init();
           })
         })
           .then(
@@ -168,12 +168,11 @@ const promptnewemployee = () => {
                 console.table("\r", results); // results contains rows returned by server
               }
             )
-            )
-          .then(init())
+          )
         
       };
 
-(async function init() {
+async function init() {
   await promptUser().then((answers) => {
     let Command = answers.commands;
     switch (Command) {
@@ -221,4 +220,5 @@ const promptnewemployee = () => {
     }
   });
   // await init();
-})();
+};
+init();
