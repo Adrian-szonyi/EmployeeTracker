@@ -38,7 +38,7 @@ The MIT License (MIT) Copyright (c) 2015 Chris Kibble Permission is hereby grant
 
 ## Screenshot
 
-![Desktop Screenshot](Capture.png)
+![Desktop Screenshot](Capture.PNG)
 
 ## Questions
 
