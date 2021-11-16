@@ -55,15 +55,6 @@ const promptnewdept = () => {
           init();
         }
       )
-        .then(
-          db.query(
-            "SELECT * FROM `department`",
-            function (err, results, fields) {
-              console.table("\r", results); // results contains rows returned by server
-            }
-          )
-        )
-        .then(init());
     });
 };
 
@@ -104,15 +95,13 @@ const promptnewrole = (departments) => {
           init();
         }
       )
-        .then(
           db.query(
             "SELECT department.*, roles.role_id, roles.title, roles.salary, department.department_name FROM `roles` JOIN `department` ON roles.department=department.department_id",
             function (err, results, fields) {
               console.table("\r", results); // results contains rows returned by server
             }
-          )
         )
-        .then(init());
+        init();
     });
 };
 
@@ -309,18 +298,10 @@ const promptnewemployee = async () => {
         [first_name, last_name, role, manager_id],
         function (err) {
           if (err) throw err;
-          init();
         }
       );
+      init();
     })
-    .then(
-      db.query(
-        "SELECT employee.*, roles.title, department.department_name FROM `employee` JOIN `roles` ON employee.roles=roles.role_id JOIN `department` ON roles.department=department.department_id",
-        function (err, results, fields) {
-          console.table("\r", results); // results contains rows returned by server
-        }
-      )
-    );
 };
 const updateEmployee = async () => {
   const { employees, roles } = await getAllChoices();
@@ -400,7 +381,8 @@ async function init() {
       case "view all departments":
         db.query("SELECT * FROM `department`", function (err, results, fields) {
           console.table("\r", results); // results contains rows returned by server
-        }).then(init());
+        })
+        init();
         break;
       case "view all roles":
         db.query(
@@ -408,7 +390,8 @@ async function init() {
           function (err, results, fields) {
             console.table("\r", results); // results contains rows returned by server
           }
-        ).then(init());
+        )
+        init();
         break;
       case "view all employees":
         db.query(
@@ -416,7 +399,8 @@ async function init() {
           function (err, results, fields) {
             console.table("\r", results); // results contains rows returned by server
           }
-        ).then(init());
+        )
+        init();
         break;
       case "add a department":
         promptnewdept();
@@ -453,7 +437,7 @@ async function init() {
           viewEmployeebyDept()
           break;  
       case "Finished":
-        // End the program (by breaking out of the while loop
+        console.log("Employee database up to date.")
         break;
     }
   });
