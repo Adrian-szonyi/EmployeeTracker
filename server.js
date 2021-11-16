@@ -29,6 +29,7 @@ const promptUser = () => {
         "delete role",
         "delete employee",
         "Update an employee's manager",
+        "view employees by department",
         "Finished",
       ],
       message: "What would you like to do?",
@@ -148,6 +149,35 @@ const getAllChoices = async () => {
 
   return { managers, roles, departments, employees };
 };
+
+const viewEmployeebyDept = async () => {
+  const {employees, departments} = await getAllChoices();
+  inquirer
+  .prompt([
+    {
+      name: "department",
+      message: "For which department would you like to see all employees?",
+      type: "list",
+      choices: departments.map((department) => {
+        return {
+          name: department.department_name,
+          value: department.department_id,
+        };
+      }),
+    },
+  ])
+  .then(function (answer) {
+    let departmentselect = answer.department;
+    db.query(
+      `SELECT CONCAT(first_name,' ', last_name) as FullName, roles.title, roles.salary, employee_id from employee JOIN roles ON employee.roles_id = roles.role_id WHERE roles.department = ${departmentselect}`,
+      function (err, results, fields) { 
+        console.table("\r", results); // results contains rows returned by server
+        if (err) throw err;
+        init();
+      }
+    );
+  });
+}
 
 const deletedepartment = async () => {
   const { departments } = await getAllChoices();
@@ -418,6 +448,10 @@ async function init() {
         break;
         case "Update an employee's manager":
           updateEmployeeManager()
+        break;
+        case "view employees by department":
+          viewEmployeebyDept()
+          break;  
       case "Finished":
         // End the program (by breaking out of the while loop
         break;
