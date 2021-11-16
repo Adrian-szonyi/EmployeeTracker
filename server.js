@@ -110,9 +110,12 @@ const promptnewrole = (departments) => {
 };
 
 const getAllManagers = () => {
-  return db.promise().query("SELECT CONCAT(first_name,' ', last_name) as FullName from `employee` WHERE manager_id is NULL")
+  return db.promise().query("SELECT CONCAT(first_name,' ', last_name) as FullName, employee_id from `employee` WHERE manager_id is NULL")
   }
   
+const getAllEmployees = () => {
+  return db.promise().query("SELECT CONCAT(first_name,' ', last_name) as FullName, employee_id from `employee`")
+}
 
 const getAllRoles = () => {
   return db.promise().query("SELECT * FROM roles")
@@ -126,12 +129,13 @@ const getAllChoices = async () => {
   const [managers] = await getAllManagers();
   const [roles] = await getAllRoles();
   const [departments] = await getAllDepartments();
+  const [employees] = await getAllEmployees();
 
-  return {managers, roles, departments}
+  return {managers, roles, departments, employees}
 }
 
 const promptnewemployee = async() => {
- const {departments, roles, managers} = await getAllChoices();
+ const {roles, managers} = await getAllChoices();
 
      inquirer
     .prompt([
