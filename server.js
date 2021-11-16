@@ -54,7 +54,7 @@ const promptnewdept = () => {
           if (err) throw err;
           init();
         }
-      )
+      );
     });
 };
 
@@ -94,14 +94,13 @@ const promptnewrole = (departments) => {
           if (err) throw err;
           init();
         }
-      )
-          db.query(
-            "SELECT department.*, roles.role_id, roles.title, roles.salary, department.department_name FROM `roles` JOIN `department` ON roles.department=department.department_id",
-            function (err, results, fields) {
-              console.table("\r", results); // results contains rows returned by server
-            }
-        )
-        init();
+      );
+      db.query(
+        "SELECT department.*, roles.role_id, roles.title, roles.salary, department.department_name FROM `roles` JOIN `department` ON roles.department=department.department_id",
+        function (err, results, fields) {
+          console.table("\r", results); // results contains rows returned by server
+        }
+      );
     });
 };
 
@@ -140,33 +139,33 @@ const getAllChoices = async () => {
 };
 
 const viewEmployeebyDept = async () => {
-  const {employees, departments} = await getAllChoices();
+  const { employees, departments } = await getAllChoices();
   inquirer
-  .prompt([
-    {
-      name: "department",
-      message: "For which department would you like to see all employees?",
-      type: "list",
-      choices: departments.map((department) => {
-        return {
-          name: department.department_name,
-          value: department.department_id,
-        };
-      }),
-    },
-  ])
-  .then(function (answer) {
-    let departmentselect = answer.department;
-    db.query(
-      `SELECT CONCAT(first_name,' ', last_name) as FullName, roles.title, roles.salary, employee_id from employee JOIN roles ON employee.roles_id = roles.role_id WHERE roles.department = ${departmentselect}`,
-      function (err, results, fields) { 
-        console.table("\r", results); // results contains rows returned by server
-        if (err) throw err;
-        init();
-      }
-    );
-  });
-}
+    .prompt([
+      {
+        name: "department",
+        message: "For which department would you like to see all employees?",
+        type: "list",
+        choices: departments.map((department) => {
+          return {
+            name: department.department_name,
+            value: department.department_id,
+          };
+        }),
+      },
+    ])
+    .then(function (answer) {
+      let departmentselect = answer.department;
+      db.query(
+        `SELECT CONCAT(first_name,' ', last_name) as FullName, roles.title, roles.salary, employee_id from employee JOIN roles ON employee.roles_id = roles.role_id WHERE roles.department = ${departmentselect}`,
+        function (err, results, fields) {
+          console.table("\r", results); // results contains rows returned by server
+          if (err) throw err;
+          init();
+        }
+      );
+    });
+};
 
 const deletedepartment = async () => {
   const { departments } = await getAllChoices();
@@ -301,7 +300,7 @@ const promptnewemployee = async () => {
         }
       );
       init();
-    })
+    });
 };
 const updateEmployee = async () => {
   const { employees, roles } = await getAllChoices();
@@ -364,7 +363,7 @@ const updateEmployeeManager = async () => {
       let manager = answer.new_manager;
       let employee = answer.employee;
       db.query(
-        `UPDATE employee SET manager_id = ${manager} WHERE employee_id = ${employee}`, 
+        `UPDATE employee SET manager_id = ${manager} WHERE employee_id = ${employee}`,
         function (err) {
           if (err) throw err;
           init();
@@ -373,7 +372,6 @@ const updateEmployeeManager = async () => {
     });
 };
 
-
 async function init() {
   await promptUser().then((answers) => {
     let Command = answers.commands;
@@ -381,7 +379,7 @@ async function init() {
       case "view all departments":
         db.query("SELECT * FROM `department`", function (err, results, fields) {
           console.table("\r", results); // results contains rows returned by server
-        })
+        });
         init();
         break;
       case "view all roles":
@@ -390,7 +388,7 @@ async function init() {
           function (err, results, fields) {
             console.table("\r", results); // results contains rows returned by server
           }
-        )
+        );
         init();
         break;
       case "view all employees":
@@ -399,7 +397,7 @@ async function init() {
           function (err, results, fields) {
             console.table("\r", results); // results contains rows returned by server
           }
-        )
+        );
         init();
         break;
       case "add a department":
@@ -418,26 +416,23 @@ async function init() {
       case "update an employee role":
         updateEmployee();
         break;
-        case "delete department":
-          deletedepartment()
-          .then(console.log("Department successfully deleted"))
+      case "delete department":
+        deletedepartment().then(console.log("Department successfully deleted"));
         break;
-        case "delete role":
-          deleterole()
-          .then(console.log("role successfully deleted"))
+      case "delete role":
+        deleterole().then(console.log("role successfully deleted"));
         break;
-        case "delete employee":
-          deleteEmployee()
-          .then(console.log("employee successfully deleted"))
+      case "delete employee":
+        deleteEmployee().then(console.log("employee successfully deleted"));
         break;
-        case "Update an employee's manager":
-          updateEmployeeManager()
+      case "Update an employee's manager":
+        updateEmployeeManager();
         break;
-        case "view employees by department":
-          viewEmployeebyDept()
-          break;  
+      case "view employees by department":
+        viewEmployeebyDept();
+        break;
       case "Finished":
-        console.log("Employee database up to date.")
+        console.log("Employee database up to date.");
         break;
     }
   });

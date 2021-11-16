@@ -1,4 +1,4 @@
-# Note Take Application
+# Employee Database Manager
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -15,11 +15,13 @@
 
 ## Description
 
-This is a note taking application that allows users to create notes for themselves which are saved in a JSON database. The notes are added to the list on the lefthand side and can be deleted and selected for display on the right side.
+I have built an employee management system using inquirer, mysql and console tables. This is running on a node server and once you have installed all the npm packages you can run through the inquirer prompts to update an employee database. Users will be able to view multiple joined tables, update records, delete and add new data as well.
+
+screen recording demo: [click_here](https://watch.screencastify.com/v/G8TpNDHUrg1WtOy0Lnaa)
 
 ## Installation
 
-The application has been set up to run on the heroku server. Follow this link: (https://stark-anchorage-71097.herokuapp.com)
+The application has been set up to on the node server. You will need to install the relevant npm and login to mysql to set up the database.
 
 ## Tests
 
